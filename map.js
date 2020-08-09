@@ -14,21 +14,123 @@ L.tileLayer(
   }
 ).addTo(map);
 
-var markers = L.markerClusterGroup();
+// Marker styles
+var blankMarker = L.icon({
+  iconUrl: "/",
+  iconSize: [0, 0],
+  iconAnchor: [0, 0],
+});
 
-markers.addLayer(L.marker([51, 0]));
-markers.addLayer(L.marker([51, 0]));
+var regularMarker = L.icon({
+  iconUrl: "markers/blackMarker.svg",
+  iconSize: [50, 100],
+  iconAnchor: [25, 75],
+});
 
-L.Routing.control({
-  show: false,
-  addWaypoints: false,
-  draggableWaypoints: false,
-  fitSelectedRoutes: false,
+var aMarker = L.icon({
+  iconUrl: "markers/greenMarker.svg",
+  iconSize: [50, 100],
+  iconAnchor: [25, 75],
+});
 
-  waypoints: [L.latLng(51, 0), L.latLng(51, 0.1)],
-  lineOptions: {
-    styles: [{ color: "green", opacity: 1, weight: 5 }],
-  },
-}).addTo(map);
+var redMarker = L.icon({
+  iconUrl: "markers/redMarker.svg",
+  iconSize: [50, 100],
+  iconAnchor: [25, 75],
+});
 
-map.addLayer(markers);
+var pointA = L.latLng(51, 0);
+var pointB = L.latLng(51, 0.1);
+
+var pointA1 = L.latLng(51.3, 0);
+var pointB1 = L.latLng(51, 0.5);
+
+var markersCluster = L.markerClusterGroup();
+var markers = [];
+
+marker = createMarker(pointA, pointB);
+markers.push(marker);
+markersCluster.addLayer(marker);
+
+marker = createMarker(pointA1, pointB1);
+markers.push(marker);
+markersCluster.addLayer(marker);
+
+map.addLayer(markersCluster);
+
+function onMarkerMouseOver(e) {
+  addToMap(e.target);
+}
+function onMarkerMouseOut(e) {
+  removeFromMap(e.target);
+}
+function onMarkerMouseClick(e) {
+  // Deactivate all other routes
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].options.options.route.remove();
+  }
+
+  e.target.options.options.routeActive = true;
+  addToMap(e.target);
+}
+
+function onMapMouseClick(e) {
+  console.log("haha");
+}
+
+function createMarker(pointA, pointB) {
+  marker = L.marker(pointA, {
+    icon: regularMarker,
+    options: {
+      route: createRoute(pointA, pointB),
+      routeActive: false,
+    },
+  });
+
+  marker.on("mouseover", onMarkerMouseOver);
+  marker.on("mouseout", onMarkerMouseOut);
+  marker.on("click", onMarkerMouseClick);
+  return marker;
+}
+
+function createRoute(pointA, pointB) {
+  route = L.Routing.control({
+    show: false,
+    addWaypoints: false,
+    draggableWaypoints: false,
+    fitSelectedRoutes: false,
+
+    waypoints: [pointA, pointB],
+    lineOptions: {
+      styles: [{ color: "green", opacity: 1, weight: 5 }],
+    },
+    createMarker: function (i, wp, nWps) {
+      if (i === 0) {
+        // First marker
+        return L.marker(wp.latLng, {
+          icon: blankMarker,
+        });
+      } else {
+        // Last marker
+        return L.marker(wp.latLng, {
+          icon: redMarker,
+        });
+      }
+    },
+  });
+
+  return route;
+}
+function addToMap(marker) {
+  // Check if route is already displayed on the map
+  if (!marker.options.options.route._map) {
+    marker.setIcon(aMarker);
+    marker.options.options.route.addTo(map);
+  }
+}
+function removeFromMap(marker) {
+  if (marker.options.options.routeActive === false) {
+    marker.setIcon(regularMarker);
+    marker.options.options.route.remove();
+  }
+}

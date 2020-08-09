@@ -1,6 +1,9 @@
 body {
   margin: 0;
 }
+.leaflet-routing-container {
+  display: none;
+}
 
 #map {
   height: 100vh;
