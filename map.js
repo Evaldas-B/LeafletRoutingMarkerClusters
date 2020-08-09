@@ -19,4 +19,16 @@ var markers = L.markerClusterGroup();
 markers.addLayer(L.marker([51, 0]));
 markers.addLayer(L.marker([51, 0]));
 
+L.Routing.control({
+  show: false,
+  addWaypoints: false,
+  draggableWaypoints: false,
+  fitSelectedRoutes: false,
+
+  waypoints: [L.latLng(51, 0), L.latLng(51, 0.1)],
+  lineOptions: {
+    styles: [{ color: "green", opacity: 1, weight: 5 }],
+  },
+}).addTo(map);
+
 map.addLayer(markers);
