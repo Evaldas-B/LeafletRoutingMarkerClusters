@@ -17,27 +17,27 @@ L.tileLayer(
 
 // Marker styles
 var blankMarker = L.icon({
-  iconUrl: "markers/blackMarker.svg",
+  iconUrl: "markers/baseMarker.svg",
   iconSize: [0, 0],
   iconAnchor: [0, 0],
 });
 
 var regularMarker = L.icon({
-  iconUrl: "markers/blackMarker.svg",
-  iconSize: [50, 100],
-  iconAnchor: [25, 75],
+  iconUrl: "markers/baseMarker.svg",
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
 });
 
 var aMarker = L.icon({
-  iconUrl: "markers/greenMarker.svg",
-  iconSize: [50, 100],
-  iconAnchor: [25, 75],
+  iconUrl: "markers/aMarker.svg",
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
 });
 
 var bMarker = L.icon({
-  iconUrl: "markers/redMarker.svg",
-  iconSize: [50, 100],
-  iconAnchor: [25, 75],
+  iconUrl: "markers/bMarker.svg",
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
 });
 
 var pointA = L.latLng(51, 0);
@@ -117,7 +117,7 @@ function createRoute(pointA, pointB) {
 
     waypoints: [pointA, pointB],
     lineOptions: {
-      styles: [{ color: "green", opacity: 1, weight: 5 }],
+      styles: [{ color: "green", opacity: 0.7, weight: 7 }],
     },
     createMarker: function (i, wp, nWps) {
       if (i === 0) {
