@@ -1,4 +1,5 @@
 var map = L.map("map").setView([51, 0], 13);
+map.on("click", onMapMouseClick);
 
 L.tileLayer(
   "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw",
@@ -16,7 +17,7 @@ L.tileLayer(
 
 // Marker styles
 var blankMarker = L.icon({
-  iconUrl: "/",
+  iconUrl: "markers/blackMarker.svg",
   iconSize: [0, 0],
   iconAnchor: [0, 0],
 });
@@ -33,7 +34,7 @@ var aMarker = L.icon({
   iconAnchor: [25, 75],
 });
 
-var redMarker = L.icon({
+var bMarker = L.icon({
   iconUrl: "markers/redMarker.svg",
   iconSize: [50, 100],
   iconAnchor: [25, 75],
@@ -45,6 +46,9 @@ var pointB = L.latLng(51, 0.1);
 var pointA1 = L.latLng(51.3, 0);
 var pointB1 = L.latLng(51, 0.5);
 
+var pointA2 = L.latLng(51.2, 0.1);
+var pointB2 = L.latLng(51.1, 0.2);
+
 var markersCluster = L.markerClusterGroup();
 var markers = [];
 
@@ -53,6 +57,10 @@ markers.push(marker);
 markersCluster.addLayer(marker);
 
 marker = createMarker(pointA1, pointB1);
+markers.push(marker);
+markersCluster.addLayer(marker);
+
+marker = createMarker(pointA2, pointB2);
 markers.push(marker);
 markersCluster.addLayer(marker);
 
@@ -67,15 +75,22 @@ function onMarkerMouseOut(e) {
 function onMarkerMouseClick(e) {
   // Deactivate all other routes
   for (let i = 0; i < markers.length; i++) {
-    markers[i].options.options.route.remove();
+    // Prevent from removing marker that is clicked
+    if (e.target._leaflet_id !== markers[i]._leaflet_id) {
+      markers[i].options.options.routeActive = false;
+      removeFromMap(markers[i]);
+    }
   }
-
   e.target.options.options.routeActive = true;
   addToMap(e.target);
 }
 
 function onMapMouseClick(e) {
-  console.log("haha");
+  // Remove all routes
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setIcon(regularMarker);
+    markers[i].options.options.route.remove();
+  }
 }
 
 function createMarker(pointA, pointB) {
@@ -113,7 +128,7 @@ function createRoute(pointA, pointB) {
       } else {
         // Last marker
         return L.marker(wp.latLng, {
-          icon: redMarker,
+          icon: bMarker,
         });
       }
     },
