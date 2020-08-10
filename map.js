@@ -32,6 +32,7 @@ var aMarker = L.icon({
   iconUrl: "markers/aMarker.svg",
   iconSize: [40, 40],
   iconAnchor: [20, 40],
+  popupAnchor: [0, -45],
 });
 
 var bMarker = L.icon({
@@ -88,8 +89,8 @@ function onMarkerMouseClick(e) {
 function onMapMouseClick(e) {
   // Remove all routes
   for (let i = 0; i < markers.length; i++) {
-    markers[i].setIcon(regularMarker);
-    markers[i].options.options.route.remove();
+    markers[i].options.options.routeActive = false;
+    removeFromMap(markers[i]);
   }
 }
 
@@ -100,7 +101,23 @@ function createMarker(pointA, pointB) {
       route: createRoute(pointA, pointB),
       routeActive: false,
     },
-  });
+  }).bindPopup(
+    `<div id="container">
+
+    <img width=250 height=150 src=https://via.placeholder.com/250x150?text=Image+placeholder>
+      <div id="content">
+       <div class="details-text">Pickup: <b>Some street 6, Aachen, DE-52132, Germany</b></div>
+       <div class="details-text">Delivery: <b>Other street 12, Kaunas, LT-64523, Lithuania</b></div>
+       <div class="details-text">Load: <b>4 Bananas</b></div>
+       <div class="details-text">Price: <b>500 Eur</b></div>
+       <div class=button-container>
+       <button>More details</button>
+       </div>
+      </div>
+    
+    </div>`,
+    { maxWidth: 560 }
+  );
 
   marker.on("mouseover", onMarkerMouseOver);
   marker.on("mouseout", onMarkerMouseOut);
